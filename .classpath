@@ -3,7 +3,8 @@
 	<classpathentry kind="src" path="src"/>
 	<classpathentry kind="con" path="com.google.appengine.eclipse.core.GAE_CONTAINER"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
-	<classpathentry kind="lib" path="war/WEB-INF/lib/org.restlet.ext.servlet.jar"/>
-	<classpathentry kind="lib" path="war/WEB-INF/lib/org.restlet.jar"/>
+	<classpathentry kind="lib" path="war/WEB-INF/lib/org.restlet.ext.servlet.jar" sourcepath="D:/restlet-gae-2.2snapshot/src"/>
+	<classpathentry kind="lib" path="war/WEB-INF/lib/org.restlet.jar" sourcepath="D:/restlet-gae-2.2snapshot/src"/>
+	<classpathentry kind="lib" path="war/WEB-INF/lib/org.restlet.ext.xml.jar" sourcepath="D:/restlet-gae-2.2snapshot/src"/>
 	<classpathentry kind="output" path="war/WEB-INF/classes"/>
 </classpath>
