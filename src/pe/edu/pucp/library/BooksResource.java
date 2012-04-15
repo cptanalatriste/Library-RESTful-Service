@@ -1,7 +1,6 @@
 package pe.edu.pucp.library;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.List;
 
 import org.restlet.data.Form;
@@ -16,32 +15,35 @@ import org.restlet.resource.ServerResource;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
+import com.googlecode.objectify.Key;
+import com.googlecode.objectify.NotFoundException;
+
 /**
  * @author cgavidia
  * 
  */
 public class BooksResource extends ServerResource {
 
-	public static final String NAME_ATTRIBUTE = "nombre";
-	public static final String CODE_ATTRIBUTE = "codigo";
+	private static final String BOOKS_ELEMENT = "libros";
 	private static final String DUPLICATE_BOOK_CODE = "1";
 	private static final String DUPLICATE_BOOK_MSG = "Ya existe un libro con el codigo enviado";
 	private static final String BOOK_CREATED_MSG = "El libro se creo con éxito";
 
+	private BookDAO dao = new BookDAO();
+
 	@Post
 	public Representation acceptBook(Representation entity) {
 		Form form = new Form(entity);
-		String bookId = form.getFirstValue(CODE_ATTRIBUTE);
-		String bookName = form.getFirstValue(NAME_ATTRIBUTE);
-
 		Representation result = null;
 
-		if (!isInRepository()) {
+		if (!isInRepository(form.getFirstValue(Book.CODE_ELEMENT))) {
 			setStatus(Status.SUCCESS_CREATED);
+			Book book = new Book(form);
+			Key<Book> key = dao.add(book);
 			result = new StringRepresentation(BOOK_CREATED_MSG,
 					MediaType.TEXT_PLAIN);
 			result.setLocationRef(getRequest().getResourceRef().getIdentifier()
-					+ "/" + bookId);
+					+ "/" + key.getId());
 		} else {
 			setStatus(Status.CLIENT_ERROR_NOT_FOUND);
 			result = generateErrorRepresentation(DUPLICATE_BOOK_MSG,
@@ -58,7 +60,7 @@ public class BooksResource extends ServerResource {
 			Document document = result.getDocument();
 			Element errorElement = document.createElement("error");
 			document.appendChild(errorElement);
-			Element codeElement = document.createElement(CODE_ATTRIBUTE);
+			Element codeElement = document.createElement(Book.CODE_ELEMENT);
 			codeElement.appendChild(document.createTextNode(errorCode));
 			errorElement.appendChild(codeElement);
 
@@ -78,23 +80,10 @@ public class BooksResource extends ServerResource {
 		try {
 			DomRepresentation result = new DomRepresentation(MediaType.TEXT_XML);
 			Document document = result.getDocument();
-			Element booksElement = document.createElement("libros");
+			Element booksElement = document.createElement(BOOKS_ELEMENT);
 			document.appendChild(booksElement);
 			for (Book book : getBooks()) {
-				Element bookElement = document.createElement("libro");
-
-				Element bookIdElement = document.createElement(CODE_ATTRIBUTE);
-				bookIdElement
-						.appendChild(document.createTextNode(book.getId()));
-				bookElement.appendChild(bookIdElement);
-
-				Element nameElement = document.createElement(NAME_ATTRIBUTE);
-				nameElement
-						.appendChild(document.createTextNode(book.getName()));
-				bookElement.appendChild(nameElement);
-
-				booksElement.appendChild(bookElement);
-
+				booksElement.appendChild(book.toXml(document));
 			}
 			document.normalizeDocument();
 			return result;
@@ -106,17 +95,16 @@ public class BooksResource extends ServerResource {
 	}
 
 	private List<Book> getBooks() {
-		// TODO (cgavidia): Temporal implementation
-		List<Book> list = new ArrayList<Book>();
-		Book book = new Book();
-		book.setId("123");
-		book.setName("El Ingenioso Hidalgo Don Quijote de la Mancha");
-		list.add(book);
-		return list;
+		return dao.listByProperty(null, null);
 	}
 
-	// TODO (cgavidia): Implement with DataStore access
-	private boolean isInRepository() {
-		return true;
+	private boolean isInRepository(String code) {
+		boolean result = true;
+		try {
+			dao.get(Long.parseLong(code));
+		} catch (NotFoundException e) {
+			result = false;
+		}
+		return result;
 	}
 }

@@ -6,5 +6,7 @@
 	<classpathentry kind="lib" path="war/WEB-INF/lib/org.restlet.ext.servlet.jar" sourcepath="D:/restlet-gae-2.2snapshot/src"/>
 	<classpathentry kind="lib" path="war/WEB-INF/lib/org.restlet.jar" sourcepath="D:/restlet-gae-2.2snapshot/src"/>
 	<classpathentry kind="lib" path="war/WEB-INF/lib/org.restlet.ext.xml.jar" sourcepath="D:/restlet-gae-2.2snapshot/src"/>
+	<classpathentry kind="lib" path="war/WEB-INF/lib/objectify-3.1.jar" sourcepath="D:/objectify-3.1/src"/>
+	<classpathentry kind="lib" path="war/WEB-INF/lib/guava-11.0.2.jar"/>
 	<classpathentry kind="output" path="war/WEB-INF/classes"/>
 </classpath>
