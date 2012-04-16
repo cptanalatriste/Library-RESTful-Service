@@ -2,6 +2,8 @@ package pe.edu.pucp.library;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import org.restlet.data.Form;
 import org.restlet.data.MediaType;
@@ -16,7 +18,6 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
 import com.googlecode.objectify.Key;
-import com.googlecode.objectify.NotFoundException;
 
 /**
  * @author cgavidia
@@ -24,9 +25,12 @@ import com.googlecode.objectify.NotFoundException;
  */
 public class BooksResource extends ServerResource {
 
+	public static final Logger LOG = Logger.getLogger(BooksResource.class
+			.getName());
+
 	private static final String BOOKS_ELEMENT = "libros";
-	private static final String DUPLICATE_BOOK_CODE = "1";
-	private static final String DUPLICATE_BOOK_MSG = "Ya existe un libro con el codigo enviado";
+	private static final String POST_ERROR_CODE = "1";
+	private static final String POST_ERROR_MSG = "No ha sido posible registrar el libro";
 	private static final String BOOK_CREATED_MSG = "El libro se creo con éxito";
 
 	private BookDAO dao = new BookDAO();
@@ -36,7 +40,7 @@ public class BooksResource extends ServerResource {
 		Form form = new Form(entity);
 		Representation result = null;
 
-		if (!isInRepository(form.getFirstValue(Book.CODE_ELEMENT))) {
+		try {
 			setStatus(Status.SUCCESS_CREATED);
 			Book book = new Book(form);
 			Key<Book> key = dao.add(book);
@@ -44,11 +48,13 @@ public class BooksResource extends ServerResource {
 					MediaType.TEXT_PLAIN);
 			result.setLocationRef(getRequest().getResourceRef().getIdentifier()
 					+ "/" + key.getId());
-		} else {
+		} catch (Exception e) {
+			LOG.log(Level.SEVERE, "Error in POST", e);
 			setStatus(Status.CLIENT_ERROR_NOT_FOUND);
-			result = generateErrorRepresentation(DUPLICATE_BOOK_MSG,
-					DUPLICATE_BOOK_CODE);
+			result = generateErrorRepresentation(POST_ERROR_MSG + ": "
+					+ e.toString(), POST_ERROR_CODE);
 		}
+
 		return result;
 	}
 
@@ -98,13 +104,4 @@ public class BooksResource extends ServerResource {
 		return dao.listByProperty(null, null);
 	}
 
-	private boolean isInRepository(String code) {
-		boolean result = true;
-		try {
-			dao.get(Long.parseLong(code));
-		} catch (NotFoundException e) {
-			result = false;
-		}
-		return result;
-	}
 }

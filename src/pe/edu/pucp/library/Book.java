@@ -50,7 +50,9 @@ public class Book implements Serializable {
 	}
 
 	public Book(Form form) {
-		id = Long.parseLong(form.getFirstValue(Book.CODE_ELEMENT));
+		if (form.getFirstValue(Book.CODE_ELEMENT) != null) {
+			id = Long.parseLong(form.getFirstValue(Book.CODE_ELEMENT));
+		}
 		title = form.getFirstValue(Book.TITLE_ELEMENT);
 		author = form.getFirstValue(Book.AUTHOR_ELEMENT);
 		summary = form.getFirstValue(Book.SUMMARY_ELEMENT);

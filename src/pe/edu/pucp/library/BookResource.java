@@ -41,10 +41,8 @@ public class BookResource extends ServerResource {
 
 	@Put
 	public void storeBook(Representation entity) {
-		if (currentBook == null) {
-			currentBook = new Book(new Form(entity));
-			currentBook.setId(Long.parseLong(currentId));
-		}
+		currentBook = new Book(new Form(entity));
+		currentBook.setId(Long.parseLong(currentId));
 		dao.add(currentBook);
 		setStatus(Status.SUCCESS_OK);
 
