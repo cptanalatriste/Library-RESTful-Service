@@ -4,9 +4,13 @@ import org.restlet.Application;
 import org.restlet.Restlet;
 import org.restlet.routing.Router;
 
+import pe.edu.pucp.model.Book;
+import pe.edu.pucp.resource.BookResource;
+import pe.edu.pucp.resource.BooksResource;
+
 /**
  * @author cgavidia
- *
+ * 
  */
 public class LibraryApplication extends Application {
 

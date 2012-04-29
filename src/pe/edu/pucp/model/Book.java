@@ -1,4 +1,4 @@
-package pe.edu.pucp.library;
+package pe.edu.pucp.model;
 
 import java.io.Serializable;
 import java.util.Arrays;
@@ -13,9 +13,13 @@ import org.w3c.dom.Element;
 
 import com.google.common.base.Strings;
 
+/**
+ * @author cgavidia
+ * 
+ */
 @SuppressWarnings("serial")
 @Entity
-public class Book implements Serializable {
+public class Book extends BaseEntity implements Serializable {
 
 	private static final String BOOK_ELEMENT = "libro";
 	public static final String TITLE_ELEMENT = "titulo";
@@ -31,6 +35,7 @@ public class Book implements Serializable {
 	private static final String COPIES_ELEMENT = "copias";
 	private static final String ISBNS_ELEMENT = "ISBNs";
 	private static final String SUBJECTS_ELEMENT = "categorias";
+	public static final String LIST_ROOT_ELEMENT = "libros";
 
 	@Id
 	private Long id;
@@ -49,7 +54,8 @@ public class Book implements Serializable {
 
 	}
 
-	public Book(Form form) {
+	@Override
+	public void intializeProperties(Form form) {
 		if (form.getFirstValue(Book.CODE_ELEMENT) != null) {
 			id = Long.parseLong(form.getFirstValue(Book.CODE_ELEMENT));
 		}
@@ -65,7 +71,6 @@ public class Book implements Serializable {
 		year = Integer.parseInt(form.getFirstValue(Book.YEAR_ELEMENT));
 		numberOfCopies = Integer.parseInt(form
 				.getFirstValue(Book.COPIES_ELEMENT));
-
 	}
 
 	public Element toXml(Document document) {
