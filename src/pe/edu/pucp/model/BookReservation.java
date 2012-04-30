@@ -11,7 +11,6 @@ import com.googlecode.objectify.Key;
  * @author carlos
  * 
  */
-@SuppressWarnings("serial")
 @Entity
 public class BookReservation {
 

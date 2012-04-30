@@ -17,7 +17,7 @@ import org.restlet.resource.ServerResource;
 import org.w3c.dom.Document;
 
 import pe.edu.pucp.dao.LibraryServiceDAO;
-import pe.edu.pucp.model.BaseEntity;
+import pe.edu.pucp.model.BaseSerializer;
 
 import com.googlecode.objectify.Key;
 
@@ -25,8 +25,7 @@ import com.googlecode.objectify.Key;
  * @author cgavidia
  * 
  */
-public class LibraryServiceEntityResource<T extends BaseEntity> extends
-		ServerResource {
+public class LibraryServiceEntityResource<T> extends ServerResource {
 
 	public static final Logger LOG = Logger
 			.getLogger(LibraryServiceEntityResource.class.getName());
@@ -38,17 +37,18 @@ public class LibraryServiceEntityResource<T extends BaseEntity> extends
 
 	private LibraryServiceDAO<T> dao;
 	protected Class<T> clazz;
-	private String codeElement;
+	private BaseSerializer<T> serializer;
 
-	public LibraryServiceEntityResource(Class<T> clazz, String codeElement) {
+	public LibraryServiceEntityResource(Class<T> clazz,
+			BaseSerializer<T> serializer) {
 		this.dao = new LibraryServiceDAO<T>(clazz);
 		this.clazz = clazz;
-		this.codeElement = codeElement;
+		this.serializer = serializer;
 	}
 
 	@Override
 	protected void doInit() throws ResourceException {
-		currentId = (String) getRequest().getAttributes().get(codeElement);
+		currentId = (String) getRequest().getAttributes().get(serializer.getCodeElement());
 		currentEntity = getEntity(currentId);
 		setExisting(currentEntity != null);
 	}
@@ -65,8 +65,9 @@ public class LibraryServiceEntityResource<T extends BaseEntity> extends
 	public void storeEntity(Representation entity) {
 		try {
 			currentEntity = clazz.newInstance();
-			currentEntity.intializeProperties(new Form(entity));
-			currentEntity.setId(Long.parseLong(currentId));
+			serializer.setEntity(currentEntity);
+			serializer.intializeProperties(new Form(entity));
+			serializer.setId(Long.parseLong(currentId));
 			dao.add(currentEntity);
 			setStatus(Status.SUCCESS_OK);
 		} catch (Exception e) {
@@ -82,7 +83,8 @@ public class LibraryServiceEntityResource<T extends BaseEntity> extends
 			DomRepresentation representation = new DomRepresentation(
 					MediaType.TEXT_XML);
 			Document document = representation.getDocument();
-			document.appendChild(currentEntity.toXml(document));
+			serializer.setEntity(currentEntity);
+			document.appendChild(serializer.toXml(document));
 			return representation;
 		} catch (IOException e) {
 			LOG.log(Level.SEVERE, "Error in GET", e);

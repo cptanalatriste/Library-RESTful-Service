@@ -18,7 +18,7 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
 import pe.edu.pucp.dao.LibraryServiceDAO;
-import pe.edu.pucp.model.BaseEntity;
+import pe.edu.pucp.model.BaseSerializer;
 
 import com.googlecode.objectify.Key;
 
@@ -26,8 +26,7 @@ import com.googlecode.objectify.Key;
  * @author cgavidia
  * 
  */
-public class LibraryServiceListResource<T extends BaseEntity> extends
-		ServerResource {
+public class LibraryServiceListResource<T> extends ServerResource {
 
 	public static final Logger LOG = Logger
 			.getLogger(LibraryServiceListResource.class.getName());
@@ -35,19 +34,21 @@ public class LibraryServiceListResource<T extends BaseEntity> extends
 	private static final String POST_ERROR_CODE = "1";
 	private static final String POST_ERROR_MSG = "No ha sido posible registrar la entidad";
 	private static final String ENTITY_CREATED_MSG = "La entidad se creo con éxito";
-
 	private static final String ERROR_CODE_ELEMENT = "codigo";
+	private static final String GET_ERROR_MSG = "No ha sido posible obtener las entidades";
+	private static final String GET_ERROR_CODE = "2";
 
 	protected LibraryServiceDAO<T> dao;
 
 	protected Class<T> clazz;
 
-	private String rootListElement;
+	private BaseSerializer<T> serializer;
 
-	public LibraryServiceListResource(Class<T> clazz, String rootListElement) {
+	public LibraryServiceListResource(Class<T> clazz,
+			BaseSerializer<T> serializer) {
 		this.dao = new LibraryServiceDAO<T>(clazz);
 		this.clazz = clazz;
-		this.rootListElement = rootListElement;
+		this.serializer = serializer;
 	}
 
 	@Post
@@ -58,7 +59,8 @@ public class LibraryServiceListResource<T extends BaseEntity> extends
 		try {
 			setStatus(Status.SUCCESS_CREATED);
 			T entity = clazz.newInstance();
-			entity.intializeProperties(form);
+			serializer.setEntity(entity);
+			serializer.intializeProperties(form);
 			Key<T> key = dao.add(entity);
 			result = new StringRepresentation(ENTITY_CREATED_MSG,
 					MediaType.TEXT_PLAIN);
@@ -91,7 +93,7 @@ public class LibraryServiceListResource<T extends BaseEntity> extends
 			errorElement.appendChild(messageElement);
 
 		} catch (IOException e) {
-			e.printStackTrace();
+			LOG.log(Level.SEVERE, "Error in Error Representation", e);
 		}
 		return result;
 
@@ -102,18 +104,21 @@ public class LibraryServiceListResource<T extends BaseEntity> extends
 		try {
 			DomRepresentation result = new DomRepresentation(MediaType.TEXT_XML);
 			Document document = result.getDocument();
-			Element entitiesElement = document.createElement(rootListElement);
+			Element entitiesElement = document.createElement(serializer
+					.getRootListElement());
 			document.appendChild(entitiesElement);
 			for (T entity : listAllEntities()) {
-				entitiesElement.appendChild(entity.toXml(document));
+				serializer.setEntity(entity);
+				entitiesElement.appendChild(serializer.toXml(document));
 			}
 			document.normalizeDocument();
 			return result;
 		} catch (IOException e) {
-			e.printStackTrace();
+			LOG.log(Level.SEVERE, "Error in GET", e);
+			setStatus(Status.SERVER_ERROR_INTERNAL);
+			return generateErrorRepresentation(GET_ERROR_MSG + ": "
+					+ e.toString(), GET_ERROR_CODE);
 		}
-		return null;
-
 	}
 
 	private List<T> listAllEntities() {

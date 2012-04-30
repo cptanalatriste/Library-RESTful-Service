@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.logging.Logger;
 
 import pe.edu.pucp.model.Book;
+import pe.edu.pucp.model.BookReservation;
 import pe.edu.pucp.model.Student;
 
 import com.google.appengine.api.datastore.QueryResultIterable;
@@ -26,6 +27,7 @@ public class LibraryServiceDAO<T> extends DAOBase {
 	static {
 		ObjectifyService.register(Book.class);
 		ObjectifyService.register(Student.class);
+		ObjectifyService.register(BookReservation.class);
 	}
 
 	protected Class<T> clazz;
@@ -45,6 +47,10 @@ public class LibraryServiceDAO<T> extends DAOBase {
 
 	public T get(Long id) throws NotFoundException {
 		return ofy().get(clazz, id);
+	}
+
+	public T get(Key<T> key) {
+		return ofy().get(key);
 	}
 
 	public List<T> listByProperty(String propertyName, String propertyValue) {

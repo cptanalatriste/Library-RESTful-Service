@@ -10,7 +10,7 @@ import pe.edu.pucp.resource.framework.LibraryServiceListResource;
 public class BooksResource extends LibraryServiceListResource<Book> {
 
 	public BooksResource() {
-		super(Book.class, Book.LIST_ROOT_ELEMENT);
+		super(Book.class, new BookSerializer());
 	}
 
 }

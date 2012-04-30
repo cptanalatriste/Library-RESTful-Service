@@ -10,7 +10,7 @@ import pe.edu.pucp.resource.framework.LibraryServiceEntityResource;
 public class BookResource extends LibraryServiceEntityResource<Book> {
 
 	public BookResource() {
-		super(Book.class, Book.CODE_ELEMENT);
+		super(Book.class, new BookSerializer());
 	}
 
 }
