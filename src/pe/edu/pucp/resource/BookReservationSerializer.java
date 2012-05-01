@@ -69,6 +69,12 @@ public class BookReservationSerializer extends BaseSerializer<BookReservation> {
 	public Element toXml(Document document) {
 		Element reservationElement = document
 				.createElement(RESERVATION_ELEMENT);
+
+		Element codeElement = document.createElement(CODE_ELEMENT);
+		codeElement.appendChild(document.createTextNode(entity.getId()
+				.toString()));
+		reservationElement.appendChild(codeElement);
+
 		Student student = new LibraryServiceDAO<Student>(Student.class)
 				.get(entity.getStudent());
 		Book book = new LibraryServiceDAO<Book>(Book.class).get(entity
@@ -77,6 +83,7 @@ public class BookReservationSerializer extends BaseSerializer<BookReservation> {
 				.toXml(document));
 		reservationElement
 				.appendChild(new BookSerializer(book).toXml(document));
+
 		Element dateElement = document.createElement(DATE_ELEMENT);
 		dateElement.appendChild(document.createTextNode(formatter.format(entity
 				.getDate())));
