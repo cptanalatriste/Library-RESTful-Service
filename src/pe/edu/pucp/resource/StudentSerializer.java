@@ -22,6 +22,7 @@ public class StudentSerializer extends BaseSerializer<Student> {
 	private static final String UNIVERSITY_CODE_ELEMENT = "codigoPUCP";
 	private static final String MOBILE_ELEMENT = "celular";
 	private static final String EMAIL_ELEMENT = "email";
+	private static final String PASSWORD_ELEMENT = "contrasegna";
 	public static final String LIST_ROOT_ELEMENT = "estudiantes";
 	private static final String STUDENT_ELEMENT = "estudiante";
 
@@ -55,6 +56,7 @@ public class StudentSerializer extends BaseSerializer<Student> {
 		entity.setUniversityCode(form.getFirstValue(UNIVERSITY_CODE_ELEMENT));
 		entity.setMobile(new PhoneNumber(form.getFirstValue(MOBILE_ELEMENT)));
 		entity.setEmail(new Email(form.getFirstValue(EMAIL_ELEMENT)));
+		entity.setPassword(form.getFirstValue(PASSWORD_ELEMENT));
 
 	}
 
@@ -86,6 +88,11 @@ public class StudentSerializer extends BaseSerializer<Student> {
 		lastNameElement.appendChild(document.createTextNode(entity
 				.getLastName()));
 		studentElement.appendChild(lastNameElement);
+
+		Element passwordElement = document.createElement(PASSWORD_ELEMENT);
+		passwordElement.appendChild(document.createTextNode(entity
+				.getPassword() == null ? "" : entity.getPassword()));
+		studentElement.appendChild(passwordElement);
 
 		Element universityCodeElement = document
 				.createElement(UNIVERSITY_CODE_ELEMENT);

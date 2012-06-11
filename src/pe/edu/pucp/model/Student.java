@@ -5,10 +5,6 @@ import java.io.Serializable;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 
-import org.restlet.data.Form;
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
-
 import com.google.appengine.api.datastore.Email;
 import com.google.appengine.api.datastore.PhoneNumber;
 
@@ -27,6 +23,7 @@ public class Student implements Serializable {
 	private String universityCode;
 	private PhoneNumber mobile;
 	private Email email;
+	private String password;
 
 	public Student() {
 
@@ -78,6 +75,14 @@ public class Student implements Serializable {
 
 	public void setEmail(Email email) {
 		this.email = email;
+	}
+
+	public String getPassword() {
+		return password;
+	}
+
+	public void setPassword(String password) {
+		this.password = password;
 	}
 
 }
