@@ -85,8 +85,9 @@ public class BookReservationSerializer extends BaseSerializer<BookReservation> {
 				.appendChild(new BookSerializer(book).toXml(document));
 
 		Element dateElement = document.createElement(DATE_ELEMENT);
-		dateElement.appendChild(document.createTextNode(formatter.format(entity
-				.getDate())));
+		dateElement.appendChild(document
+				.createTextNode(entity.getDate() != null ? formatter
+						.format(entity.getDate()) : ""));
 		reservationElement.appendChild(dateElement);
 
 		return reservationElement;
