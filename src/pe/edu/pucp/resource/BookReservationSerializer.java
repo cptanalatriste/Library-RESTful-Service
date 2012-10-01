@@ -32,7 +32,7 @@ public class BookReservationSerializer extends BaseSerializer<BookReservation> {
 	private static final String BOOK_ID_ELEMENT = "codigoLibro";
 
 	// YYYY-MM-DDThh:mmTZD (eg 1997-07-16T19:20+01:00)
-	private static final String DATE_PATTERN = "yyyy-MM-dd'T'hh:mm'-05:00'";
+	private static final String DATE_PATTERN = "yyyy-MM-dd'T'HH:mm:ss'-05:00'";
 	private static final String DATE_ELEMENT = "fechaHora";
 
 	private static final String RESERVATION_ELEMENT = "prestamo";
